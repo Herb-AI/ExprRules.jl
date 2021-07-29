@@ -84,13 +84,18 @@ function get_childtypes(rule::Any, types::AbstractVector{Symbol})
     return retval
 end
 
+
+
+
+abstract type GrammarType end
+
 """
     Grammar
 
 Represents a grammar and its production rules.
 Use the @grammar macro to create a Grammar object.
 """
-struct Grammar
+struct Grammar <: GrammarType
     rules::Vector{Any}    # list of RHS of rules (subexpressions)
     types::Vector{Symbol} # list of LHS of rules (types, all symbols)
     isterminal::BitVector # whether rule i is terminal
@@ -149,14 +154,14 @@ function _parse_rule!(v::Vector{Any}, ex::Expr)
     end
 end
 
-Base.getindex(grammar::Grammar, typ::Symbol) = grammar.bytype[typ]
+Base.getindex(grammar::GrammarType, typ::Symbol) = grammar.bytype[typ]
 
 """
    append!(grammar1::Grammar, grammar2::Grammar)
 
 Appends the production rules of grammar2 to grammar1.
 """
-function Base.append!(grammar1::Grammar, grammar2::Grammar)
+function Base.append!(grammar1::GrammarType, grammar2::GrammarType)
     N = length(grammar1.rules)
     append!(grammar1.rules, grammar2.rules)
     append!(grammar1.types, grammar2.types)
@@ -174,56 +179,56 @@ end
 
 Returns a list of nonterminals in the grammar.
 """
-nonterminals(grammar::Grammar) = collect(keys(grammar.bytype))
+nonterminals(grammar::GrammarType) = collect(keys(grammar.bytype))
 
 """
     return_type(grammar::Grammar, rule_index::Int)
 
 Returns the type of the production rule at rule_index.
 """
-return_type(grammar::Grammar, rule_index::Int) = grammar.types[rule_index]
+return_type(grammar::GrammarType, rule_index::Int) = grammar.types[rule_index]
 
 """
     child_types(grammar::Grammar, rule_index::Int)
 
 Returns the types of the children (nonterminals) of the production rule at rule_index.
 """
-child_types(grammar::Grammar, rule_index::Int) = grammar.childtypes[rule_index]
+child_types(grammar::GrammarType, rule_index::Int) = grammar.childtypes[rule_index]
 
 """
     isterminal(grammar::Grammar, rule_index::Int)
 
 Returns true if the production rule at rule_index is terminal, i.e., does not contain any nonterminal symbols.
 """
-isterminal(grammar::Grammar, rule_index::Int) = grammar.isterminal[rule_index]
+isterminal(grammar::GrammarType, rule_index::Int) = grammar.isterminal[rule_index]
 
 """
     iseval(grammar::Grammar)
 
 Returns true if any production rules in grammar contain the special _() eval function.
 """
-iseval(grammar::Grammar) = any(grammar.iseval)
+iseval(grammar::GrammarType) = any(grammar.iseval)
 
 """
     iseval(grammar::Grammar, rule_index::Int)
 
 Returns true if the production rule at rule_index contains the special _() eval function.
 """
-iseval(grammar::Grammar, index::Int) = grammar.iseval[index]
+iseval(grammar::GrammarType, index::Int) = grammar.iseval[index]
 
 """
     nchildren(grammar::Grammar, rule_index::Int)
 
 Returns the number of children (nonterminals) of the production rule at rule_index.
 """
-nchildren(grammar::Grammar, rule_index::Int) = length(grammar.childtypes[rule_index])
+nchildren(grammar::GrammarType, rule_index::Int) = length(grammar.childtypes[rule_index])
 
 """
     max_arity(grammar::Grammar)
 
 Returns the maximum arity (number of children) over all production rules in the grammar.
 """
-max_arity(grammar::Grammar) = maximum(length(cs) for cs in grammar.childtypes)
+max_arity(grammar::GrammarType) = maximum(length(cs) for cs in grammar.childtypes)
 
 
 """
@@ -248,28 +253,28 @@ include("recycler.jl")
 
 Returns the return type in the production rule used by node.
 """
-return_type(grammar::Grammar, node::RuleNode) = grammar.types[node.ind]
+return_type(grammar::GrammarType, node::RuleNode) = grammar.types[node.ind]
 
 """
     child_types(grammar::Grammar, node::RuleNode)
 
 Returns the list of child types in the production rule used by node.
 """
-child_types(grammar::Grammar, node::RuleNode) = grammar.childtypes[node.ind]
+child_types(grammar::GrammarType, node::RuleNode) = grammar.childtypes[node.ind]
 
 """
     isterminal(grammar::Grammar, node::RuleNode)
 
 Returns true if the production rule used by node is terminal, i.e., does not contain any nonterminal symbols.
 """
-isterminal(grammar::Grammar, node::RuleNode) = grammar.isterminal[node.ind]
+isterminal(grammar::GrammarType, node::RuleNode) = grammar.isterminal[node.ind]
 
 """
     nchildren(grammar::Grammar, node::RuleNode)
 
 Returns the number of children in the production rule used by node.
 """
-nchildren(grammar::Grammar, node::RuleNode) = length(child_types(grammar, node))
+nchildren(grammar::GrammarType, node::RuleNode) = length(child_types(grammar, node))
 
 """
     contains_returntype(node::RuleNode, grammar::Grammar, sym::Symbol, maxdepth::Int=typemax(Int))
@@ -277,7 +282,7 @@ nchildren(grammar::Grammar, node::RuleNode) = length(child_types(grammar, node))
 Returns true if the tree rooted at node contains at least one node at depth less than maxdepth
 with the given return type.
 """
-function contains_returntype(node::RuleNode, grammar::Grammar, sym::Symbol, maxdepth::Int=typemax(Int))
+function contains_returntype(node::RuleNode, grammar::GrammarType, sym::Symbol, maxdepth::Int=typemax(Int))
     maxdepth < 1 && return false
     if return_type(grammar, node) == sym
         return true
@@ -304,7 +309,7 @@ function Base.hash(node::RuleNode, h::UInt=zero(UInt))
     return retval
 end
 
-function Base.show(io::IO, grammar::Grammar)
+function Base.show(io::IO, grammar::GrammarType)
     for i in eachindex(grammar.rules)
         println(io, i, ": ", grammar.types[i], " = ", grammar.rules[i])
     end
@@ -366,7 +371,7 @@ end
 
 Returns the executable julia expression represented in the expression tree with root rulenode.  The returned expression can be evaluated using eval().
 """
-function get_executable(rulenode::RuleNode, grammar::Grammar)
+function get_executable(rulenode::RuleNode, grammar::GrammarType)
     root = (rulenode._val != nothing) ?
         rulenode._val : deepcopy(grammar.rules[rulenode.ind])
     if !grammar.isterminal[rulenode.ind] # not terminal
@@ -374,7 +379,7 @@ function get_executable(rulenode::RuleNode, grammar::Grammar)
     end
     return root
 end
-function _get_executable(expr::Expr, rulenode::RuleNode, grammar::Grammar, j=0)
+function _get_executable(expr::Expr, rulenode::RuleNode, grammar::GrammarType, j=0)
     for (k,arg) in enumerate(expr.args)
         if isa(arg, Expr)
             expr.args[k],j = _get_executable(arg, rulenode, grammar, j)
@@ -389,7 +394,7 @@ function _get_executable(expr::Expr, rulenode::RuleNode, grammar::Grammar, j=0)
     end
     return expr, j
 end
-function _get_executable(typ::Symbol, rulenode::RuleNode, grammar::Grammar, j=0)
+function _get_executable(typ::Symbol, rulenode::RuleNode, grammar::GrammarType, j=0)
     retval = typ
     if haskey(grammar.bytype, typ)
         child = rulenode.children[1]
@@ -407,8 +412,8 @@ end
 
 Evaluate the expression tree with root rulenode.
 """
-Core.eval(rulenode::RuleNode, grammar::Grammar) = Core.eval(Main, get_executable(rulenode, grammar))
-Core.eval(grammar::Grammar, index::Int) = Core.eval(Main, grammar.rules[index].args[2])
+Core.eval(rulenode::RuleNode, grammar::GrammarType) = Core.eval(Main, get_executable(rulenode, grammar))
+Core.eval(grammar::GrammarType, index::Int) = Core.eval(Main, grammar.rules[index].args[2])
 """
     Core.eval(tab::SymbolTable, ex::Expr) 
 
@@ -429,7 +434,7 @@ end
 
 Generates a random RuleNode of return type typ and maximum depth max_depth.
 """
-function Base.rand(::Type{RuleNode}, grammar::Grammar, typ::Symbol, max_depth::Int=10, 
+function Base.rand(::Type{RuleNode}, grammar::GrammarType, typ::Symbol, max_depth::Int=10, 
     bin::Union{NodeRecycler,Nothing}=nothing)
     rules = grammar[typ]
     
@@ -456,7 +461,7 @@ end
 
 Generates a random RuleNode of return type typ and maximum depth max_depth guided by a minimum depth map dmap.
 """
-function Base.rand(::Type{RuleNode}, grammar::Grammar, typ::Symbol, dmap::AbstractVector{Int}, 
+function Base.rand(::Type{RuleNode}, grammar::GrammarType, typ::Symbol, dmap::AbstractVector{Int}, 
     max_depth::Int=10, bin::Union{NodeRecycler,Nothing}=nothing)
     rules = grammar[typ]
     rule_index = StatsBase.sample(filter(r->dmap[r] ≤ max_depth, rules))
@@ -506,7 +511,7 @@ end
 
 Selects a uniformly random node of the given return type, typ, limited to maxdepth.
 """
-function StatsBase.sample(root::RuleNode, typ::Symbol, grammar::Grammar,
+function StatsBase.sample(root::RuleNode, typ::Symbol, grammar::GrammarType,
                           maxdepth::Int=typemax(Int))
     x = RuleNodeAndCount(root, 0)
     if grammar.types[root.ind] == typ
@@ -518,7 +523,7 @@ function StatsBase.sample(root::RuleNode, typ::Symbol, grammar::Grammar,
     grammar.types[x.node.ind] == typ || error("type $typ not found in RuleNode")
     x.node
 end
-function _sample(node::RuleNode, typ::Symbol, grammar::Grammar, x::RuleNodeAndCount,
+function _sample(node::RuleNode, typ::Symbol, grammar::GrammarType, x::RuleNodeAndCount,
                  maxdepth::Int)
     maxdepth < 1 && return
     if grammar.types[node.ind] == typ
@@ -615,7 +620,7 @@ end
 Selects a uniformly random node in the tree of a given type, specified using its parent such that the subtree can be replaced.
 Returns a NodeLoc.
 """
-function StatsBase.sample(::Type{NodeLoc}, root::RuleNode, typ::Symbol, grammar::Grammar,
+function StatsBase.sample(::Type{NodeLoc}, root::RuleNode, typ::Symbol, grammar::GrammarType,
                           maxdepth::Int=typemax(Int))
     x = NodeLocAndCount(root_node_loc(root), 0)
     if grammar.types[root.ind] == typ
@@ -625,7 +630,7 @@ function StatsBase.sample(::Type{NodeLoc}, root::RuleNode, typ::Symbol, grammar:
     grammar.types[get(root,x.loc).ind] == typ || error("type $typ not found in RuleNode")
     x.loc
 end
-function _sample(::Type{NodeLoc}, node::RuleNode, typ::Symbol, grammar::Grammar,
+function _sample(::Type{NodeLoc}, node::RuleNode, typ::Symbol, grammar::GrammarType,
                  x::NodeLocAndCount, maxdepth::Int)
     maxdepth < 1 && return
     for (j,child) in enumerate(node.children)
@@ -641,7 +646,7 @@ end
 
 ###
 
-function _next_state!(node::RuleNode, grammar::Grammar, max_depth::Int)
+function _next_state!(node::RuleNode, grammar::GrammarType, max_depth::Int)
 
     if max_depth < 1
         return (node, false) # did not work
@@ -738,7 +743,7 @@ end
 An iterator over all possible expressions of a grammar up to max_depth with start symbol sym.
 """
 mutable struct ExpressionIterator
-    grammar::Grammar
+    grammar::GrammarType
     max_depth::Int
     sym::Symbol
 end
@@ -794,7 +799,7 @@ end
 
 Count the number of possible expressions of a grammar up to max_depth with start symbol sym.
 """
-function count_expressions(grammar::Grammar, max_depth::Int, sym::Symbol)
+function count_expressions(grammar::GrammarType, max_depth::Int, sym::Symbol)
     retval = 0
     for root_rule in grammar[sym]
         node = RuleNode(root_rule)
@@ -827,7 +832,7 @@ AbstractTrees.printnode(io::IO, node::RuleNode) = print(io, node.ind)
 
 Returns the minimum depth achievable for each production rule, dmap.
 """
-function mindepth_map(grammar::Grammar)
+function mindepth_map(grammar::GrammarType)
     dmap0 = Int[isterminal(grammar,i) ? 0 : typemax(Int)/2 for i in eachindex(grammar.rules)]
     dmap1 = fill(-1, length(grammar.rules)) 
     while dmap0 != dmap1
@@ -838,7 +843,7 @@ function mindepth_map(grammar::Grammar)
     end
     dmap0
 end
-function _mindepth(grammar::Grammar, rule_index::Int, dmap::AbstractVector{Int})
+function _mindepth(grammar::GrammarType, rule_index::Int, dmap::AbstractVector{Int})
     isterminal(grammar, rule_index) && return 0
     return 1 + maximum([mindepth(grammar, ctyp, dmap) for ctyp in child_types(grammar, rule_index)])
 end
@@ -847,7 +852,7 @@ end
 
 Returns the minimum depth achievable for a given nonterminal symbol
 """
-function mindepth(grammar::Grammar, typ::Symbol, dmap::AbstractVector{Int})
+function mindepth(grammar::GrammarType, typ::Symbol, dmap::AbstractVector{Int})
     return minimum(dmap[grammar.bytype[typ]])
 end
 
@@ -857,7 +862,7 @@ end
 Returns a symbol table populated with mapping from symbols in grammar to
 symbols in module mod or Main, if defined.
 """
-function Interpreter.SymbolTable(grammar::Grammar, mod::Module=Main)
+function Interpreter.SymbolTable(grammar::GrammarType, mod::Module=Main)
     tab = SymbolTable()
     for rule in grammar.rules
         _add_to_symboltable!(tab, rule, mod)

@@ -652,6 +652,9 @@ function _next_state!(node::RuleNode, grammar::GrammarType, max_depth::Int)
         return (node, false) # did not work
     elseif isterminal(grammar, node)
         # do nothing
+        if iseval(grammar, node.ind) && (node._val === nothing)  # evaluate the rule
+            node._val = eval(grammar.rules[node.ind].args[2])
+        end
         return (node, false) # cannot change leaves
     else # !isterminal
         if isempty(node.children)
@@ -669,6 +672,10 @@ function _next_state!(node::RuleNode, grammar::GrammarType, max_depth::Int)
                 while !worked && i < length(child_rules)
                     i += 1
                     child = RuleNode(child_rules[i])
+
+                    if iseval(grammar, child.ind) # if rule needs to be evaluated (_())
+                        child._val = eval(grammar.rules[child.ind].args[2])
+                    end
                     worked = true
                     if !isterminal(grammar, child)
                         child, worked = _next_state!(child, grammar, max_depth-1)
@@ -697,6 +704,11 @@ function _next_state!(node::RuleNode, grammar::GrammarType, max_depth::Int)
                     if i < length(child_rules)
                         child_worked = true
                         child = RuleNode(child_rules[i+1])
+
+                        if iseval(grammar, child.ind)
+                            child._val = eval(grammar.rules[child.ind].args[2])
+                        end
+
                         if !isterminal(grammar, child)
                             child, child_worked = _next_state!(child, grammar, max_depth-1)
                         end
@@ -719,6 +731,11 @@ function _next_state!(node::RuleNode, grammar::GrammarType, max_depth::Int)
                         while !worked && i < length(child_rules)
                             i += 1
                             child = RuleNode(child_rules[i])
+
+                            if iseval(grammar, child.ind)
+                                child._val = eval(grammar.rules[child.ind].args[2])
+                            end
+
                             worked = true
                             if !isterminal(grammar, child)
                                 child, worked = _next_state!(child, grammar, max_depth-1)

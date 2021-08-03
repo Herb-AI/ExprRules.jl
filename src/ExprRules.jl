@@ -12,7 +12,7 @@ export
         RuleNode,
         NodeLoc,
 
-        ExpressionIterator,
+        BFSIterator,
 
         @grammar,
         max_arity,
@@ -36,7 +36,9 @@ export
         interpret,
 
         NodeRecycler,
-        recycle!
+        recycle!,
+
+        _next_state!
 
 
 include("interpreter.jl")
@@ -657,7 +659,8 @@ function _next_state!(node::RuleNode, grammar::GrammarType, max_depth::Int)
         end
         return (node, false) # cannot change leaves
     else # !isterminal
-        if isempty(node.children)
+        # if node is not terminal and doesn't have children, expand every child
+        if isempty(node.children)  
             if max_depth ≤ 1
                 return (node,false) # cannot expand
             end
@@ -705,6 +708,7 @@ function _next_state!(node::RuleNode, grammar::GrammarType, max_depth::Int)
                         child_worked = true
                         child = RuleNode(child_rules[i+1])
 
+                        # node needs to be evaluated
                         if iseval(grammar, child.ind)
                             child._val = eval(grammar.rules[child.ind].args[2])
                         end
@@ -754,20 +758,25 @@ function _next_state!(node::RuleNode, grammar::GrammarType, max_depth::Int)
     end
 end
 
+
+
+abstract type ExpressionIter end
+
+
 """
     ExpressionIterator(grammar::Grammar, max_depth::Int, sym::Symbol)
 
 An iterator over all possible expressions of a grammar up to max_depth with start symbol sym.
 """
-mutable struct ExpressionIterator
+mutable struct BFSIterator <: ExpressionIter
     grammar::GrammarType
     max_depth::Int
     sym::Symbol
 end
-Base.IteratorSize(::ExpressionIterator) = Base.SizeUnknown()
-Base.eltype(::ExpressionIterator) = RuleNode
+Base.IteratorSize(::ExpressionIter) = Base.SizeUnknown()
+Base.eltype(::ExpressionIter) = RuleNode
 
-function Base.iterate(iter::ExpressionIterator)
+function Base.iterate(iter::ExpressionIter)
     grammar, sym, max_depth = iter.grammar, iter.sym, iter.max_depth
     node = RuleNode(grammar[sym][1])
     if isterminal(grammar, node)
@@ -791,7 +800,7 @@ function Base.iterate(iter::ExpressionIterator)
     end
 end
 
-function Base.iterate(iter::ExpressionIterator, state::RuleNode)
+function Base.iterate(iter::ExpressionIter, state::RuleNode)
     grammar, max_depth = iter.grammar, iter.max_depth
     node, worked = _next_state!(state, grammar, max_depth)
 
@@ -838,7 +847,7 @@ end
 
 Count the number of possible expressions in the expression iterator.
 """
-count_expressions(iter::ExpressionIterator) = count_expressions(iter.grammar, iter.max_depth, iter.sym)
+count_expressions(iter::ExpressionIter) = count_expressions(iter.grammar, iter.max_depth, iter.sym)
 
 # Interface to AbstractTrees.jl
 AbstractTrees.children(node::RuleNode) = node.children

@@ -12,7 +12,7 @@ export
         RuleNode,
         NodeLoc,
 
-        BFSIterator,
+        ExpressionIterator,
 
         @grammar,
         max_arity,
@@ -36,9 +36,7 @@ export
         interpret,
 
         NodeRecycler,
-        recycle!,
-
-        _next_state!
+        recycle!
 
 
 include("interpreter.jl")
@@ -760,23 +758,25 @@ end
 
 
 
-abstract type ExpressionIter end
+abstract type ExprIter end
 
 
 """
     ExpressionIterator(grammar::Grammar, max_depth::Int, sym::Symbol)
 
 An iterator over all possible expressions of a grammar up to max_depth with start symbol sym.
+
+Types of search depends on the order of production rules in the given grammar: BFS - terminals come first; DFS: nonterminals come first
 """
-mutable struct BFSIterator <: ExpressionIter
+mutable struct ExpressionIterator <: ExprIter
     grammar::GrammarType
     max_depth::Int
     sym::Symbol
 end
-Base.IteratorSize(::ExpressionIter) = Base.SizeUnknown()
-Base.eltype(::ExpressionIter) = RuleNode
+Base.IteratorSize(::ExprIter) = Base.SizeUnknown()
+Base.eltype(::ExprIter) = RuleNode
 
-function Base.iterate(iter::ExpressionIter)
+function Base.iterate(iter::ExprIter)
     grammar, sym, max_depth = iter.grammar, iter.sym, iter.max_depth
     node = RuleNode(grammar[sym][1])
     if isterminal(grammar, node)
@@ -800,7 +800,8 @@ function Base.iterate(iter::ExpressionIter)
     end
 end
 
-function Base.iterate(iter::ExpressionIter, state::RuleNode)
+function Base.iterate(iter::ExprIter, state::RuleNode)
+    println("   starting from state $state")
     grammar, max_depth = iter.grammar, iter.max_depth
     node, worked = _next_state!(state, grammar, max_depth)
 
@@ -847,7 +848,7 @@ end
 
 Count the number of possible expressions in the expression iterator.
 """
-count_expressions(iter::ExpressionIter) = count_expressions(iter.grammar, iter.max_depth, iter.sym)
+count_expressions(iter::ExprIter) = count_expressions(iter.grammar, iter.max_depth, iter.sym)
 
 # Interface to AbstractTrees.jl
 AbstractTrees.children(node::RuleNode) = node.children

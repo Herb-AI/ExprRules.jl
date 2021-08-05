@@ -8,10 +8,12 @@ using AbstractTrees
 using DataStructures  #NodeRecycler
 
 export
+        GrammarType,
         Grammar,
         RuleNode,
         NodeLoc,
 
+        ExprIter,
         ExpressionIterator,
 
         @grammar,

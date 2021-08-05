@@ -803,7 +803,6 @@ function Base.iterate(iter::ExprIter)
 end
 
 function Base.iterate(iter::ExprIter, state::RuleNode)
-    println("   starting from state $state")
     grammar, max_depth = iter.grammar, iter.max_depth
     node, worked = _next_state!(state, grammar, max_depth)
 

@@ -37,8 +37,8 @@ export
         RuleNode,
         NodeLoc,
 
-        ExprIter,
         ExpressionIterator,
+        ContextFreeIterator,
 
         @cfgrammar,
         max_arity,

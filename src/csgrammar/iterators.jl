@@ -152,7 +152,7 @@ function _next_state!(node::RuleNode, grammar::ContextSensitiveGrammar, max_dept
 
 
 
-mutable struct ContextSensitiveIterator <: ExprIter
+mutable struct ContextSensitiveIterator <: ExpressionIterator
 	grammar::ContextSensitiveGrammar
 	max_depth::Int
 	sym::Symbol

@@ -2,7 +2,7 @@
 function _next_state! end
 
 
-abstract type ExprIter end
+abstract type ExpressionIterator end
 
 
 """
@@ -12,17 +12,17 @@ An iterator over all possible expressions of a grammar up to max_depth with star
 
 Types of search depends on the order of production rules in the given grammar: BFS - terminals come first; DFS: nonterminals come first
 """
-mutable struct ExpressionIterator <: ExprIter
+mutable struct ContextFreeIterator <: ExpressionIterator
     grammar::Grammar
     max_depth::Int
     sym::Symbol
 end
 
-Base.IteratorSize(::ExprIter) = Base.SizeUnknown()
+Base.IteratorSize(::ExpressionIterator) = Base.SizeUnknown()
 
-Base.eltype(::ExprIter) = RuleNode
+Base.eltype(::ExpressionIterator) = RuleNode
 
-function Base.iterate(iter::ExprIter)
+function Base.iterate(iter::ExpressionIterator)
     grammar, sym, max_depth = iter.grammar, iter.sym, iter.max_depth
     node = RuleNode(grammar[sym][1])
     if isterminal(grammar, node)
@@ -46,7 +46,7 @@ function Base.iterate(iter::ExprIter)
     end
 end
 
-function Base.iterate(iter::ExprIter, state::RuleNode)
+function Base.iterate(iter::ExpressionIterator, state::RuleNode)
     grammar, max_depth = iter.grammar, iter.max_depth
     node, worked = _next_state!(state, grammar, max_depth)
 
@@ -93,4 +93,4 @@ end
 
 Count the number of possible expressions in the expression iterator.
 """
-count_expressions(iter::ExprIter) = count_expressions(iter.grammar, iter.max_depth, iter.sym)
+count_expressions(iter::ExpressionIterator) = count_expressions(iter.grammar, iter.max_depth, iter.sym)

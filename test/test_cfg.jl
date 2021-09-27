@@ -281,13 +281,13 @@
 		end
 	    
 		###
-		iter = ExpressionIterator(grammar, 1, :R)
+		iter = ContextFreeIterator(grammar, 1, :R)
 		@test all(isequal(a,b) for (a,b) in zip(collect(iter), [
 		    RuleNode(2), RuleNode(3)]))
 		@test count_expressions(grammar, 1, :R) == 2
 	    
 	    
-		iter = ExpressionIterator(grammar, 2, :R)
+		iter = ContextFreeIterator(grammar, 2, :R)
 		x0 = iterate(iter)
 		@test x0 != nothing
 		item, state = x0
@@ -311,14 +311,14 @@
 		    F = 1.5
 		end
 	    
-		iter = ExpressionIterator(grammar, 2, :R)
+		iter = ContextFreeIterator(grammar, 2, :R)
 		@test all(a == b for (a,b) in zip(collect(iter), [
 		    RuleNode(1, [RuleNode(3)]),
 		    RuleNode(1, [RuleNode(4)]),
 		    RuleNode(2, [RuleNode(6)]),
 		]))
 	    
-		iter = ExpressionIterator(grammar, 3, :R)
+		iter = ContextFreeIterator(grammar, 3, :R)
 		@test all(a == b for (a,b) in zip(collect(iter), [
 		    RuleNode(1, [RuleNode(3)]),
 		    RuleNode(1, [RuleNode(4)]),
@@ -338,7 +338,7 @@
 		    R = R + R
 		end
 	    
-		iter = ExpressionIterator(grammar, 2, :R)
+		iter = ContextFreeIterator(grammar, 2, :R)
 		@test all(isequal(a,b) for (a,b) in zip(collect(iter), [
 		    RuleNode(1),
 		    RuleNode(2),

@@ -4,7 +4,7 @@ using Random
 
 protectedDiv(x, y) = iszero(y) ? 1.0 : x / y
 
-const grammar = @grammar begin
+const grammar = @cfgrammar begin
     R = x
     R = R + R
     R = R - R

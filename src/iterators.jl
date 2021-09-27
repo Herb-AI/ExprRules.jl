@@ -17,7 +17,9 @@ mutable struct ExpressionIterator <: ExprIter
     max_depth::Int
     sym::Symbol
 end
+
 Base.IteratorSize(::ExprIter) = Base.SizeUnknown()
+
 Base.eltype(::ExprIter) = RuleNode
 
 function Base.iterate(iter::ExprIter)

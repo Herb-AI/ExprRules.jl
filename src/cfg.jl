@@ -26,7 +26,7 @@ R = R + R
 end
 ```
 """
-macro grammar(ex)
+macro cfgrammar(ex)
 	rules = Any[]
 	types = Symbol[]
 	bytype = Dict{Symbol,Vector{Int}}()

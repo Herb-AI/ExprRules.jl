@@ -82,3 +82,4 @@ function node_depth(root::RuleNode, node::RuleNode)
 	end
 	return 0
 end
+

@@ -17,8 +17,17 @@ include("nodelocation.jl")
 include("sampling.jl")
 include("iterators.jl")
 include("utils.jl")
+include("rulenode_operators.jl")
 
 include("cfg.jl")
+
+include("csgrammar/context.jl")
+include("csgrammar/constraints.jl")
+include("csgrammar/propagators.jl")
+include("csgrammar/csg.jl")
+include("csgrammar/iterators.jl")
+include("csgrammar/sampling.jl")
+
 
 
 
@@ -31,7 +40,7 @@ export
         ExprIter,
         ExpressionIterator,
 
-        @grammar,
+        @cfgrammar,
         max_arity,
         depth,
         node_depth,
@@ -53,8 +62,37 @@ export
         SymbolTable,
         interpret,
 
+        containedin,
+
+        change_expr,
+	    swap_node,
+	    get_rulesequence,
+	    rulesoftype,
+	    rulesonleft,
+
         NodeRecycler,
-        recycle!
+        recycle!,
+
+        GrammarContext,
+	    addparent!,
+        copy_and_insert,
+
+        Constraint,
+        ValidatorConstraint,
+        PropagatorConstraint,
+        ComesAfter,
+        Ordered,
+
+        propagate,
+
+        ContextSensitiveGrammar,
+        @csgrammar,
+        addconstraint!,
+
+        ContextSensitiveIterator,
+        propagate_contraints
+
+
 
 
 

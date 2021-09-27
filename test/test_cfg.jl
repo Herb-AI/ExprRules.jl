@@ -1,6 +1,6 @@
 @testset "ContextFreeGrammar" begin
 	let
-		grammar = @grammar begin
+		grammar = @cfgrammar begin
 		    R = I
 		    I = 1
 		end
@@ -32,7 +32,7 @@
 	    end
 	    
 	    let
-		grammar = @grammar begin
+		grammar = @cfgrammar begin
 		    R = A
 		    A = B
 		    B = 1
@@ -90,7 +90,7 @@
 	    end
 	    
 	    let
-		grammar = @grammar begin
+		grammar = @cfgrammar begin
 		    R = R + R
 		    R = 1
 		end
@@ -108,7 +108,7 @@
 	    end
 	    
 	    let
-		grammar = @grammar begin
+		grammar = @cfgrammar begin
 		    Real = x
 		    Real = Real * Real
 		    Real = f(Real)
@@ -130,7 +130,7 @@
 	    let
 		Random.seed!(0)
 	    
-		grammar = @grammar begin
+		grammar = @cfgrammar begin
 		    Real = rand()
 		    Real = x
 		    Real = Real + Real
@@ -232,7 +232,7 @@
 	    end
 	    
 	    let
-		grammar = @grammar begin
+		grammar = @cfgrammar begin
 		    R = R + R
 		    R = 1
 		    R = 2
@@ -304,7 +304,7 @@
 	    end
 	    
 	    let
-		grammar = @grammar begin
+		grammar = @cfgrammar begin
 		    R = I | F
 		    I = 1 | 2
 		    F = F + F
@@ -332,7 +332,7 @@
 	    end
 	    
 	    let
-		grammar = @grammar begin
+		grammar = @cfgrammar begin
 		    R = 1
 		    R = 2
 		    R = R + R
@@ -354,7 +354,7 @@
 	    end
 	    
 	    let
-		grammar = @grammar begin
+		grammar = @cfgrammar begin
 		    x = x + y
 		    x = y + 1
 		    y = x + y
@@ -373,7 +373,7 @@
 	    end
 	    
 	    let
-		grammar = @grammar begin
+		grammar = @cfgrammar begin
 		    b = f(x) < n
 		    x = true
 		    n = 15
@@ -384,7 +384,7 @@
 	    end
 	    
 	    let
-		grammar = @grammar begin
+		grammar = @cfgrammar begin
 		    R = R + R
 		    R = 1
 		end
@@ -402,11 +402,11 @@
 	    end
 	    
 	    let
-		grammar1 = @grammar begin
+		grammar1 = @cfgrammar begin
 		    x = x | y | a 
 		    y = a | b 
 		end
-		grammar2 = @grammar begin
+		grammar2 = @cfgrammar begin
 		    y = y | z
 		    z = a | b | c
 		end
@@ -424,7 +424,7 @@
 	    end
 	    
 	    let 
-		grammar = @grammar begin
+		grammar = @cfgrammar begin
 		    Vector = [1, 2]
 		    Vector = exp.(Vector)
 		end
@@ -435,7 +435,7 @@
 	    end
 	    
 	    let
-		grammar = @grammar begin
+		grammar = @cfgrammar begin
 		    A = B
 		    B = C
 		    C = D

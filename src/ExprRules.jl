@@ -63,18 +63,19 @@ export
         interpret,
 
         containedin,
+        subsequenceof,
 
         change_expr,
-	    swap_node,
-	    get_rulesequence,
-	    rulesoftype,
-	    rulesonleft,
+	swap_node,
+	get_rulesequence,
+	rulesoftype,
+	rulesonleft,
 
         NodeRecycler,
         recycle!,
 
         GrammarContext,
-	    addparent!,
+	addparent!,
         copy_and_insert,
 
         Constraint,
@@ -82,6 +83,7 @@ export
         PropagatorConstraint,
         ComesAfter,
         Ordered,
+        Forbidden,
 
         propagate,
 

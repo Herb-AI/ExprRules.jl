@@ -22,3 +22,13 @@ ComesAfter(rule::Int, predecessor::Int) = ComesAfter(rule, [predecessor])
 struct Ordered <: PropagatorConstraint
 	order::Vector{Int}
 end
+
+
+
+"""
+	Forbids the derivation specified as a path in an expression tree.
+	The rules need to be in the exact order
+"""
+struct Forbidden <: PropagatorConstraint
+	sequence::Vector{Int}
+end

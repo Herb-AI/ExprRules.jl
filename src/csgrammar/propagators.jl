@@ -33,3 +33,18 @@ function propagate(c::Ordered, context::GrammarContext, domain::Vector{Int})
 
 	return filter((x) -> !(x in rules_to_remove), domain) 
 end
+
+
+"""
+	Propagates Forbidden constraints:
+		removes the elements from the domain that would complete the forbidden sequence
+"""
+function propagate(c::Forbidden, context::GrammarContext, domain::Vector{Int})
+	ancestors = get_rulesequence(context.originalExpr, context.nodeLocation[begin:end-1])
+	if subsequenceof(c.sequence[begin:end-1], ancestors)
+		last_in_seq = c.sequence[end]
+		return filter(x -> !(x == last_in_seq), domain)
+	end
+
+	return domain
+end

@@ -98,3 +98,32 @@ function containedin(vec1::Vector, vec2::Vector)
 
 	return vec1_index > max_elements
 end
+
+
+"""
+    Checks if vec1 if a subsequence of vec2
+"""
+function subsequenceof(vec1::Vector{Int}, vec2::Vector{Int})
+    vec1_index = 1
+    last_found_vec1_element_ind = 0
+    vec2_index = 1
+
+    while isassigned(vec2, vec2_index)
+        vec2_elem = vec2[vec2_index]
+        vec1_elem = get(vec1, vec1_index, nothing)
+
+        if vec1_elem === nothing 
+            break
+        end
+
+        if vec1_elem == vec2_elem && (last_found_vec1_element_ind == 0 || last_found_vec1_element_ind == vec2_index - 1)
+            vec1_index += 1
+            last_found_vec1_element_ind = vec2_index
+        end
+
+        vec2_index += 1
+    end
+    
+    return get(vec1, vec1_index, nothing) === nothing
+
+end

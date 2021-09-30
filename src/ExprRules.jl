@@ -87,7 +87,7 @@ export
         Forbidden,
 
         propagate,
-        propagate_index
+        propagate_index,
 
         ContextSensitiveGrammar,
         @csgrammar,

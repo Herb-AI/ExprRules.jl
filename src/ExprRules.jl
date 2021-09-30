@@ -64,6 +64,7 @@ export
 
         containedin,
         subsequenceof,
+        accumulate_if!,
 
         change_expr,
 	swap_node,
@@ -86,6 +87,7 @@ export
         Forbidden,
 
         propagate,
+        propagate_index
 
         ContextSensitiveGrammar,
         @csgrammar,

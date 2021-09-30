@@ -9,4 +9,8 @@
 
 # notebook backups from ipynb 
 .ipynb_checkpoints
+
 Manifest.toml
+
+# vsc code
+./vscode/

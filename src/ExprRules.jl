@@ -94,7 +94,7 @@ export
         mindepth_map,
         mindepth,
         containedin,
-        subsequenceof,
-        accumulate_if!
+        subsequenceof
+        #accumulate_if!
 
 end # module

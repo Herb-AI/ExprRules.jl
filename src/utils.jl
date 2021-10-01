@@ -129,16 +129,3 @@ function subsequenceof(vec1::Vector{Int}, vec2::Vector{Int})
 end
 
 
-"""
-    Adds elem to the coll if the function f return true
-"""
-function accumulate_if!(acc::Vector{T}, elem::T, f::Function) where {T} 
-    f(elem) ? push!(acc, elem) : acc
-end
-
-"""
-    Adds elem to the coll if the function f return true. Before adding it, it applied the transform function t
-"""
-function accumulate_if!(acc::Vector{T}, elem::T, f::Function, t::Function) where {T} 
-    f(elem) ? push!(acc, t(elem)) : acc
-end

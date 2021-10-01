@@ -16,7 +16,7 @@ include("expreval.jl")
 include("nodelocation.jl")
 include("sampling.jl")
 include("iterators.jl")
-include("utils.jl")
+#include("utils.jl")
 include("rulenode_operators.jl")
 
 include("cfg.jl")
@@ -28,6 +28,7 @@ include("csgrammar/csg.jl")
 include("csgrammar/iterators.jl")
 include("csgrammar/sampling.jl")
 
+include("utils.jl")
 
 
 
@@ -56,15 +57,9 @@ export
         sample,
         root_node_loc,
         count_expressions,
-        mindepth_map,
-        mindepth,
 
         SymbolTable,
         interpret,
-
-        containedin,
-        subsequenceof,
-        accumulate_if!,
 
         change_expr,
 	swap_node,
@@ -94,10 +89,12 @@ export
         addconstraint!,
 
         ContextSensitiveIterator,
-        propagate_contraints
+        propagate_contraints,
 
-
-
-
+        mindepth_map,
+        mindepth,
+        containedin,
+        subsequenceof,
+        accumulate_if!
 
 end # module

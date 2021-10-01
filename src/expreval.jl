@@ -58,3 +58,13 @@ Core.eval(tab::SymbolTable, ex::Expr)
 Evaluate the expression ex using symbol table tab 
 """
 Core.eval(tab::SymbolTable, ex) = interpret(tab, ex)
+
+
+function Base.display(rulenode::RuleNode, grammar::Grammar)
+	root = get_executable(rulenode, grammar)
+	if isa(root, Expr)
+	    walk_tree(root)
+	else
+	    root
+	end
+    end

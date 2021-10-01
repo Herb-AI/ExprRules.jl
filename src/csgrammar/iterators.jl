@@ -1,7 +1,7 @@
 """
 	Reduces the set of possible children of a node using the grammar's constraints
 """
-function propagate_contraints(grammar::ContextSensitiveGrammar, context::GrammarContext, child_rules::Vector{Int})
+function propagate_constraints(grammar::ContextSensitiveGrammar, context::GrammarContext, child_rules::Vector{Int})
 	domain = child_rules
 
 	for propagator in grammar.constraints
@@ -45,7 +45,7 @@ function _next_state!(node::RuleNode, grammar::ContextSensitiveGrammar, max_dept
 		    push!(new_context.nodeLocation, child_index)
 
 		    child_rules = [x for x in grammar[c]]  # select all applicable rules
-		    child_rules = propagate_contraints(grammar, new_context, child_rules)  # filter out those that violate constraints
+		    child_rules = propagate_constraints(grammar, new_context, child_rules)  # filter out those that violate constraints
 
 		    while !worked && i < length(child_rules)
 			i += 1
@@ -85,7 +85,7 @@ function _next_state!(node::RuleNode, grammar::ContextSensitiveGrammar, max_dept
 			child_type = return_type(grammar, child)
 
 			child_rules = [x for x in grammar[child_type]]  # get all applicable rules
-			child_rules = propagate_contraints(grammar, new_context, child_rules)  # filter ones that violate constraints
+			child_rules = propagate_constraints(grammar, new_context, child_rules)  # filter ones that violate constraints
 
 
 			i = something(findfirst(isequal(child.ind), child_rules), 0)
@@ -121,7 +121,7 @@ function _next_state!(node::RuleNode, grammar::ContextSensitiveGrammar, max_dept
 			    push!(new_context.nodeLocation, child_index2)
 
 			    child_rules = [x for x in grammar[c]]  # take all applicable rules
-			    child_rules = propagate_contraints(grammar, new_context, child_rules)  # reomove ones that violate constraints
+			    child_rules = propagate_constraints(grammar, new_context, child_rules)  # reomove ones that violate constraints
 
 
 			    while !worked && i < length(child_rules)
@@ -167,7 +167,7 @@ function Base.iterate(iter::ContextSensitiveIterator)
     
 	# propagate constraints on the root node 
 	sym_rules = [x for x in grammar[sym]]
-	sym_rules = propagate_contraints(grammar, init_context, sym_rules)
+	sym_rules = propagate_constraints(grammar, init_context, sym_rules)
 	#node = RuleNode(grammar[sym][1])
 	node = RuleNode(sym_rules[1])
      
@@ -179,7 +179,7 @@ function Base.iterate(iter::ContextSensitiveIterator)
 	    while !worked
 		# increment root's rule
 		rules = [x for x in grammar[sym]]
-		rules = propagate_contraints(grammar, init_context, rules) # propagate constraints on the root node
+		rules = propagate_constraints(grammar, init_context, rules) # propagate constraints on the root node
     
 		i = something(findfirst(isequal(node.ind), rules), 0)
 		if i < length(rules)
@@ -208,7 +208,7 @@ function Base.iterate(iter::ContextSensitiveIterator, state::RuleNode)
     	    init_context = GrammarContext(init_node)
 
 	    rules = [x for x in grammar[iter.sym]]
-	    rules = propagate_contraints(grammar, init_context, rules)
+	    rules = propagate_constraints(grammar, init_context, rules)
 
 	    i = something(findfirst(isequal(node.ind), rules), 0)
 	    if i < length(rules)

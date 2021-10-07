@@ -129,6 +129,7 @@ function _next_state!(node::RuleNode, grammar::Grammar, max_depth::Int)
 		    child_index -= 1
 		    child = node.children[child_index]
     
+		    # this modifies the node if succesfull
 		    child, child_worked = _next_state!(child, grammar, max_depth-1)
 		    while !child_worked
 			child_type = return_type(grammar, child)

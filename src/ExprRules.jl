@@ -89,7 +89,7 @@ export
         addconstraint!,
 
         ContextSensitiveIterator,
-        propagate_contraints,
+        propagate_constraints,
 
         mindepth_map,
         mindepth,

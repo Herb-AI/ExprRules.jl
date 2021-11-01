@@ -112,6 +112,23 @@ Returns true if the production rule at rule_index is terminal, i.e., does not co
 """
 isterminal(grammar::Grammar, rule_index::Int) = grammar.isterminal[rule_index]
 
+
+"""
+    iscomplete(grammar::Grammar, node::RuleNode)
+
+    Returns true if the expression given by the node is complete expression, i.e., all leaves are terminal symbols
+"""
+function iscomplete(grammar::Grammar, node::RuleNode) 
+	if isterminal(grammar, node)
+		return true
+	elseif isempty(node.children)
+		# if not terminal but has children
+		return false
+	else
+		return all([is_complete(grammar, c) for c in node.children])
+	end
+end
+
 """
     iseval(grammar::Grammar)
 

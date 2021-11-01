@@ -128,4 +128,11 @@ function subsequenceof(vec1::Vector{Int}, vec2::Vector{Int})
 
 end
 
+"""
+    has_children(node::RuleNode)
+
+    Returns true if the node has children
+"""
+has_children(rule::RuleNode) = !isempty(rule.children)
+
 

@@ -57,6 +57,7 @@ export
         sample,
         root_node_loc,
         count_expressions,
+        iscomplete,
 
         SymbolTable,
         interpret,
@@ -94,7 +95,8 @@ export
         mindepth_map,
         mindepth,
         containedin,
-        subsequenceof
+        subsequenceof,
+        has_children
         #accumulate_if!
 
 end # module

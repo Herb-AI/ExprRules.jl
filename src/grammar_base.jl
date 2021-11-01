@@ -125,7 +125,7 @@ function iscomplete(grammar::Grammar, node::RuleNode)
 		# if not terminal but has children
 		return false
 	else
-		return all([is_complete(grammar, c) for c in node.children])
+		return all([iscomplete(grammar, c) for c in node.children])
 	end
 end
 
